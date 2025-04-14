@@ -2,6 +2,7 @@
 
 class Program
 {
+    //Khởi tạo đồ thị
     static Graph CreateGraph()
     {
         Graph graph = new Graph();
@@ -35,6 +36,7 @@ class Program
         return graph;
     }
 
+    //Tính chiều dài đường đi
     static int PathCost(List<Node> path)
     {
         int totalCost = 0;
@@ -47,7 +49,7 @@ class Program
 
         return totalCost;
     }
-
+    
     static void Main(string[] args)
     {
         Graph graph = CreateGraph();

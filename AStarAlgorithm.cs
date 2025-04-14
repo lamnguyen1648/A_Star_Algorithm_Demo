@@ -55,19 +55,23 @@ public class AStarAlgorithm
      */
     public List<Node> GetPath(Graph graph, Node start, Node end)
     {
-        var evaluateList = new List<Record>();
-        var passedNodes = new HashSet<Node>();
-        var recordDictionary = new Dictionary<Node, Record>();
+        var evaluateList = new List<Record>();                      //Danh sách track các record cần được đánh giá
+        var passedNodes = new HashSet<Node>();                      //Danh sách các node đã đi qua (Dùng list cũng được nhưng chỉ cần biết node đó đã đi qua hay chưa => dùng HashSet)
+        var recordDictionary = new Dictionary<Node, Record>();      //Từ điển record - Dùng để lưu trữ thông tin của record cần được cập nhật liên tục
 
+        //Bắt đầu thuật toán với việc khởi tạo record bắt đầu, thêm record vào trong danh sách và từ điển
         var startNode = new Record(start, null, 0, start.HValue);
         evaluateList.Add(startNode);
         recordDictionary[start] = startNode;
 
+        //Khởi tạo vòng lặp với điều kiện danh sách track có bản ghi/số đếm > 0 (List có sẵn hàm Count)
         while (evaluateList.Count > 0)
         {
+            //Lấy ra record đầu tiên với FScore thấp nhất, sau đó record khỏi danh sách cần được đánh giá và thêm vào danh sách các node đã đi qua
             var current = evaluateList.OrderBy(e => e.FScore).First();
             evaluateList.Remove(current);
-
+            
+            //Trong trường hợp node hiện tại là node cần tới, dừng thuật toán và tiến hành thực hiện dựng đường đi
             if (current.Node == end)
             {
                 return ToPath(current);
@@ -75,21 +79,27 @@ public class AStarAlgorithm
             
             passedNodes.Add(current.Node);
 
+            //Xét các đường nối tới các node liền kề với node hiện tại
             foreach (var edge in current.Node.Edges)
             {
                 Node neighbor = edge.Node;
+                //node liền kề này đã đi qua -> bỏ qua sang trường hợp tiếp theo
                 if (passedNodes.Contains(neighbor)) continue;
 
+                //Tính điểm G(n) từ node hiện tại đi tới node tiếp theo
                 double tmpGScore = current.GScore + edge.GValue;
 
+                //Xét xem node liền kề này đã có trong từ điển chưa
                 bool found = recordDictionary.TryGetValue(neighbor, out var neighborRecord);
 
+                //Chưa có -> khởi tạo entry từ điển mới và thêm vào danh sách node cần được đánh giá
                 if (!found)
                 {
                     neighborRecord = new Record(neighbor, current, tmpGScore, neighbor.HValue);
                     evaluateList.Add(neighborRecord);
                     recordDictionary[neighbor] = neighborRecord;
                 }
+                //Đã có nhưng G(n) của bản ghi hiện tại < G(n) vừa tính ra -> cập nhật node cha và G(n)
                 else if (neighborRecord != null && tmpGScore < neighborRecord.GScore)
                 {
                     neighborRecord.Parent = current;
