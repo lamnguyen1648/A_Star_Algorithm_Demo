@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Mine\\Coding Stuff\\AlgorithmDemo\\AlgorithmDemo.csproj": {}
+    "E:\\Mine\\Coding Stuff\\AStarAlgorithmDemo\\AlgorithmDemo.csproj": {}
   },
   "projects": {
-    "E:\\Mine\\Coding Stuff\\AlgorithmDemo\\AlgorithmDemo.csproj": {
+    "E:\\Mine\\Coding Stuff\\AStarAlgorithmDemo\\AlgorithmDemo.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Mine\\Coding Stuff\\AlgorithmDemo\\AlgorithmDemo.csproj",
+        "projectUniqueName": "E:\\Mine\\Coding Stuff\\AStarAlgorithmDemo\\AlgorithmDemo.csproj",
         "projectName": "AlgorithmDemo",
-        "projectPath": "E:\\Mine\\Coding Stuff\\AlgorithmDemo\\AlgorithmDemo.csproj",
+        "projectPath": "E:\\Mine\\Coding Stuff\\AStarAlgorithmDemo\\AlgorithmDemo.csproj",
         "packagesPath": "C:\\Users\\YoMama\\.nuget\\packages\\",
-        "outputPath": "E:\\Mine\\Coding Stuff\\AlgorithmDemo\\obj\\",
+        "outputPath": "E:\\Mine\\Coding Stuff\\AStarAlgorithmDemo\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\YoMama\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -29,6 +29,15 @@ public class AStarAlgorithm
             //FScore = GScore + HScore (Viết thế này cũng được)
         }
     }
+    
+    //List chứa các route đã đi
+    private List<List<Node>> _exploredPath = new List<List<Node>>();
+
+    //Trả về list
+    public List<List<Node>> getPathList()
+    {
+        return _exploredPath;
+    }
 
     /*
      * Function trả về kết quả đường đi với record được truyền vào
@@ -50,6 +59,20 @@ public class AStarAlgorithm
         return path;
     }
 
+    //Tính cost của path cụ thể
+    public static int PathCost(List<Node> path)
+    {
+        int cost = 0;
+
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            var edge = path[i].Edges.First(e=>e.Node == path[i + 1]);
+            cost += edge.GValue;
+        }
+
+        return cost;
+    }
+
     /*
      * Logic thuật toán
      */
@@ -64,20 +87,32 @@ public class AStarAlgorithm
         evaluateList.Add(startNode);
         recordDictionary[start] = startNode;
 
+        List<Node> bestPath = null;
+        double bestCost = double.MaxValue;
+
         //Khởi tạo vòng lặp với điều kiện danh sách track có bản ghi/số đếm > 0 (List có sẵn hàm Count)
         while (evaluateList.Count > 0)
         {
             //Lấy ra record đầu tiên với FScore thấp nhất, sau đó record khỏi danh sách cần được đánh giá và thêm vào danh sách các node đã đi qua
             var current = evaluateList.OrderBy(e => e.FScore).First();
             evaluateList.Remove(current);
+            passedNodes.Add(current.Node);
             
-            //Trong trường hợp node hiện tại là node cần tới, dừng thuật toán và tiến hành thực hiện dựng đường đi
+            //Trong trường hợp node hiện tại là node cần tới, tạm dừng tìm kiếm đường đi, thêm đường đi mới tìm thấy vào danh sách các đường đã đi, tính cost của path vừa đi và so sánh với cost của đường đi tối ưu nhất đã tìm thấy, nếu là đường đi tối ưu nhất thì thay thế
             if (current.Node == end)
             {
-                return ToPath(current);
+                var currentPath = ToPath(current);
+                double pathCost = PathCost(currentPath);
+                
+                _exploredPath.Add(new List<Node>(currentPath));
+                if (pathCost < bestCost)
+                {
+                    bestCost = pathCost;
+                    bestPath = currentPath;
+                }
+
+                continue;
             }
-            
-            passedNodes.Add(current.Node);
 
             //Xét các đường nối tới các node liền kề với node hiện tại
             foreach (var edge in current.Node.Edges)
@@ -104,10 +139,17 @@ public class AStarAlgorithm
                 {
                     neighborRecord.Parent = current;
                     neighborRecord.GScore = tmpGScore;
+                    
+                    //Trong trường hợp node này đã được đánh giá nhưng tìm ra đường đi tối ưu hơn đường đi trước, cần phải đánh giá lại node này
+                    if (passedNodes.Contains(neighbor))
+                    {
+                        passedNodes.Remove(neighbor);
+                        evaluateList.Add(neighborRecord);
+                    }
                 }
             }
         }
 
-        return new List<Node>();
+        return bestPath ?? new List<Node>();
     }
 }

@@ -2,82 +2,64 @@
 
 class Program
 {
-    //Khởi tạo đồ thị
-    static Graph CreateGraph()
-    {
-        Graph graph = new Graph();
-
-        Node nodeA = new Node('a', 21);
-        Node nodeB = new Node('b', 14);
-        Node nodeC = new Node('c', 18);
-        Node nodeD = new Node('d', 18);
-        Node nodeE = new Node('e', 5);
-        Node nodeF = new Node('f', 8);
-        Node nodeZ = new Node('z', 0);
-
-        graph.AddNode(nodeA);
-        graph.AddNode(nodeB);
-        graph.AddNode(nodeC);
-        graph.AddNode(nodeD);
-        graph.AddNode(nodeE);
-        graph.AddNode(nodeF);
-        graph.AddNode(nodeZ);
-
-        graph.AddEdge(nodeA, nodeB, 9);
-        graph.AddEdge(nodeA, nodeC, 4);
-        graph.AddEdge(nodeA, nodeD, 7);
-        graph.AddEdge(nodeB, nodeE, 11);
-        graph.AddEdge(nodeC, nodeE, 17);
-        graph.AddEdge(nodeC, nodeF, 12);
-        graph.AddEdge(nodeD, nodeF, 14);
-        graph.AddEdge(nodeE, nodeZ, 5);
-        graph.AddEdge(nodeF, nodeZ, 9);
-
-        return graph;
-    }
-
-    //Tính chiều dài đường đi
-    static int PathCost(List<Node> path)
-    {
-        int totalCost = 0;
-
-        for (int i = 0; i < path.Count - 1; i++)
-        {
-            var edge = path[i].Edges.First(e => e.Node == path[i + 1]);
-            totalCost += edge.GValue;
-        }
-
-        return totalCost;
-    }
-    
     static void Main(string[] args)
     {
-        Graph graph = CreateGraph();
+        //File đặt trong mục bin/Debug/net9.0/resources/graph.txt
+        string filePath = "./resources/graph.txt";
+        Graph graph = FileReader.ReadFile(filePath);
 
-        Node startNode = graph.GetNode('a');
-        Node goalNode = graph.GetNode('z');
-
-        if (startNode == null || goalNode == null)
+        Console.WriteLine("Danh sách các node có trong file:");
+        HashSet<char> nodeNames = new HashSet<char>();
+        foreach (var node in graph.GetAllNodes())
         {
-            Console.WriteLine("Start or goal node not found in graph!");
+            nodeNames.Add(node.Name);
+            Console.Write($"{node.Name} ");
+        }
+
+        Console.WriteLine();
+
+        if (nodeNames.Count == 0)
+        {
+            Console.WriteLine("File rỗng, vui lòng kiểm tra lại file");
             return;
         }
 
-        Console.WriteLine(
-            $"Finding shortest path from {startNode.Name} to {goalNode.Name} using A* search algorithm...");
+        Console.WriteLine("Nhập tên node khởi đầu: ");
+        char startNode = Console.ReadLine().Trim().ToLower()[0];
 
+        Console.WriteLine("Nhập tên node kết thúc: ");
+        char endNode = Console.ReadLine().Trim().ToLower()[0];
+
+        Node start = graph.GetNode(startNode);
+        Node end = graph.GetNode(endNode);
+
+        if (start == null || end == null)
+        {
+            Console.WriteLine("Không tìm thấy node khởi đầu hoặc node kết thúc, vui lòng kiểm tra lại");
+            return;
+        }
+
+        Console.WriteLine($"Tìm đường đi ngắn nhất từ node {startNode} đến node {endNode}");
         AStarAlgorithm algorithm = new AStarAlgorithm();
-        List<Node> path = algorithm.GetPath(graph, startNode, goalNode);
+        List<Node> path = algorithm.GetPath(graph, start, end);
 
         if (path.Count > 0)
         {
-            Console.WriteLine("\nShortest path found:");
+            List<List<Node>> paths = algorithm.getPathList();
+            Console.WriteLine("Danh sách các đường đã đi:");
+            for (int i = 0; i < paths.Count; i++)
+            {
+                int pathCost = AStarAlgorithm.PathCost(paths[i]);
+                Console.WriteLine($"Đường đi {i+1}: {string.Join(" -> ", paths[i].Select(n => n.Name))} (Cost: {pathCost})");
+            }
+            
+            Console.WriteLine("Đường đi tối ưu nhất:");
             Console.Write(string.Join(" -> ", path.Select(n => n.Name)));
-
-            int totalCost = PathCost(path);
-            Console.WriteLine($"\nTotal path cost: {totalCost}");
-
-            Console.WriteLine("\nStep by step:");
+            
+            int totalCost = AStarAlgorithm.PathCost(path);
+            Console.Write($" (Cost: {totalCost})\n");
+            
+            Console.WriteLine("Thứ tự đường đi:");
             for (int i = 0; i < path.Count - 1; i++)
             {
                 var edge = path[i].Edges.First(e => e.Node == path[i + 1]);
@@ -86,7 +68,7 @@ class Program
         }
         else
         {
-            Console.WriteLine("No path found!");
+            Console.WriteLine("Không tìm thấy đường đi!!!");
         }
     }
 }

@@ -40,4 +40,10 @@ public class Graph
         source.AddEdge(target, value);
         target.AddEdge(source, value);
     }
+    
+    //Lấy về toàn bộ node có trong đồ thị
+    public IEnumerable<Node> GetAllNodes()
+    {
+        return _nodes.Values;
+    }
 }
