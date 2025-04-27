@@ -3,7 +3,6 @@
 /*
  * Thuật toán A*
  * Thuật toán tìm đường đi ngắn nhất bằng cách tính và so sánh F(n) giữa các node và đưa ra giải pháp ngắn nhất dựa trên kết quả F(n) đã tính ra
- * Note: giải pháp dưới chưa tính tới chuyện liên kết với F(n) với node ban đầu rất cao nhưng F(n) với các node kế tiếp rất thấp :v
  */
 public class AStarAlgorithm
 {
@@ -26,7 +25,6 @@ public class AStarAlgorithm
             Parent = parent;
             GScore = gScore;
             HScore = hScore;
-            //FScore = GScore + HScore (Viết thế này cũng được)
         }
     }
     
